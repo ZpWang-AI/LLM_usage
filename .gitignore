@@ -1,0 +1,18 @@
+# *.sh
+*.zip
+*.ipynb
+*.log
+_*
+*tmp*
+*test*
+*old*
+!__init__.py
+
+__pycache__
+.vscode
+nohup.out
+
+# ==============================
+
+data
+api_record
