@@ -12,18 +12,17 @@ from generate_reasoning import ReasoningGenerator, ReasoningArgs
 
 def main():
     prompt = [
+        # '''
+        # '''.strip(),
         '''
-        The first argument:\n\n{arg1}\n\nThe second argument:\n\n{arg2}\n\nWhat\'s the subtext between the arguments?
-        '''.strip(),
-        '''
-        What\' the relation between arguments? Answer should be one of (Comparison, Contingency, Expansion, Temporal)
+        The first argument:\n\n{arg1}\n\nThe second argument:\n\n{arg2}\n\nWhat\' the relation between arguments? Answer should be one of (Comparison, Contingency, Expansion, Temporal). Just output one answer simply.
         '''.strip(),
     ]
     
     sample_args = ReasoningArgs(
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
-        version='gpt3_5.pdtb3.pred_l1.subtext',  # TODO
+        version='gpt3_5.pdtb3.pred_l1.init',  # TODO
         data_name='pdtb3',
         label_level='level1',
         relation='Implicit',

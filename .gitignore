@@ -1,18 +1,32 @@
 # *.sh
+*.cmd
 *.zip
 *.ipynb
 *.log
 _*
+!__init__.py
 *tmp*
 *test*
 *old*
-!__init__.py
 
 __pycache__
+logs
 .vscode
+# .gitignore
+.git
 nohup.out
 
 # ==============================
 
-data
-api_record
+/*
+!/.gitignore
+!/README.md
+!/requirements.txt
+!/src
+
+# src
+src/scripts
+!src/model/_test_model.py
+!src/data/_test_data.py
+
+# data

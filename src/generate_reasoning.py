@@ -82,7 +82,7 @@ class ReasoningGenerator:
         for pid in range(start_id, end_id):
             
             row = self.df.iloc[pid]
-            query = PromptFiller.fill_prompt(row, prompt)
+            query = PromptFiller.fill_prompt(row, self.args.prompt)
             response_list = []
             try:
                 for _ in range(self.args.n_reasoning_per_sample):

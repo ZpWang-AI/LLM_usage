@@ -67,7 +67,7 @@ def chat_api(
     model=Literal['claude-3-opus-20240229', 'gpt-3.5-turbo'],
     max_retry=30,
     show_output=False,
-):
+) -> Union[str, List[str]]:
     # return 'test output'
     client = OpenAI(
         base_url='https://api.pumpkinaigc.online/v1',
