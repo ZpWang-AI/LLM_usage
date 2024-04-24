@@ -23,9 +23,11 @@ def get_json_data_from_dir(root_dir, file_name) -> Dict[str, List[Union[int, flo
     return total_metrics
 
 
-def dump_json(target, file_path, mode, indent=None):
+def dump_json(target, file_path, mode='w', indent=None):
     with open(file_path, mode=mode, encoding='utf8')as f:
         json.dump(target, f, indent=indent, ensure_ascii=False)
+        if mode == 'a':
+            f.write('\n')
 
 
 def load_json(file_path):
@@ -38,7 +40,7 @@ def load_json(file_path):
             for line in f.readlines():
                 line = line.strip()
                 if line:
-                    content.append(json.dumps(line))
+                    content.append(json.loads(line))
         else:
             raise Exception('wrong file_path')
     return content

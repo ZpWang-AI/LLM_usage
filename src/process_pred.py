@@ -6,6 +6,7 @@ from typing import *
 from sklearn.metrics import f1_score
 
 from generate_reasoning import ReasoningArgs, ReasoningGenerator
+from utils import dump_json
 
 
 def get_label_id_from_pred(label_list:List[str], pred:str, invalid_pred:int=-1):
@@ -62,13 +63,16 @@ class ReasoningPredProcessor(ReasoningGenerator):
         pred_vec = pred_vec!=0
         gt_vec = gt_vec!=0
         f1 = f1_score(gt_vec, pred_vec, average='macro', zero_division=0)
-        return f1*100
+        f1 *= 100
+        f1_res_path = self.root_path/'f1_score.json'
+        dump_json(f1, f1_res_path)
+        return f1
     
 
 if __name__ == '__main__':
     sample_args = ReasoningArgs.load_json(
-        # '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.subtext/self.args.json'
-        '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.init/self.args.json'
+        '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.base2/self.args.json'
+        # '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.init/self.args.json'
     )
     sample_processor = ReasoningPredProcessor(sample_args)
     print(sample_processor.process_pred())
