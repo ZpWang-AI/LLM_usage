@@ -4,6 +4,7 @@ import pynvml
 import threading
 
 from typing import *
+from utils import dump_json, load_json
 
 
 class GPUManager:
@@ -120,40 +121,58 @@ class GPUManager:
         
 
 class GPUMemoryMonitor:
-    def __init__(self, cuda_id, monitor_gap=3) -> None:
-        self.cuda_id = cuda_id
-        self.gpu_memory = []
-        self.monitor_time = []
-        self.total_gpu_memory = GPUManager.query_gpu_memory(
-            cuda_id=cuda_id, show=False, to_mb=True,
-        )['total']
-        
+    def __init__(self, cuda_ids:List[int], save_path, monitor_gap=3) -> None:
+        self.cuda_ids = cuda_ids
+        self.save_path = save_path
         self.monitor_gap = monitor_gap
+        
+        self.start_time = time.time()
         self.keep_monitor = True
-        self.process = threading.Thread(
-            target=self.monitor,
-        )
-        self.process.start()
+
+        if cuda_ids:
+            total_gpu_memory = GPUManager.query_gpu_memory(
+                cuda_id=cuda_ids[0], show=False, to_mb=True,
+            )['total'] 
+            dump_json([0, total_gpu_memory], save_path, mode='a')
+            self.process = threading.Thread(
+                target=self.monitor,
+            )
+            self.process.start()
         
     def monitor(self):
         while self.keep_monitor:
-            mem = GPUManager.query_gpu_memory(
-                cuda_id=self.cuda_id,
-                show=False, to_mb=True,
-            )['used']
-            self.gpu_memory.append(mem)
-            self.monitor_time.append(time.time())
+            mems = [
+                GPUManager.query_gpu_memory(
+                    cuda_id=cid,
+                    show=False, to_mb=True,
+                )['used'] for cid in self.cuda_ids
+            ]
+            monitor_time = int(time.time()-self.start_time)/60
+
+            dump_json([monitor_time, mems], self.save_path, mode='a')
+            
+            # self.gpu_memory.append(mem)
+            # self.monitor_time.append(monitor_time)
+            
             time.sleep(self.monitor_gap)
     
     def close(self):
         self.keep_monitor = False
-    
-    def get_xy(self):
-        x = self.gpu_memory
-        y = list(map(int, self.monitor_time))
-        miny = min(y)
-        y = [(d-miny)/60 for d in y]
-        return x, y
+        self.process.join()
+        
+    @classmethod
+    def load_json_get_xy(cls, file_path) -> Tuple[List[float], List[List[int]]]:
+        res = load_json(file_path)
+        total_mem = res.pop(0)[1]
+        if not res:
+            raise Exception('wrong result')
+        x = []
+        ys = []
+        for t, mems in res:
+            x.append(t)
+            ys.append(mems+[total_mem])
+        ys = list(zip(*ys))
+        return x, ys
 
 
 if __name__ == '__main__':
