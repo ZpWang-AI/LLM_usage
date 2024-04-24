@@ -14,7 +14,7 @@ from process_pred import ReasoningPredProcessor
 def main():
     prompt = [
         '''
-        Argument 1:\n{arg1}\n\nArgument 2:\n{arg2}\n\nWhat\'s the implicit meaning between the arguments?
+        Argument 1:\n{arg1}\n\nArgument 2:\n{arg2}\n\nWhat\'s the subtext between the arguments?
         '''.strip(),
         '''
         What is the discourse relation between Argument 1 and Argument 2?\nA. Comparison\nB. Contingency\nC. Expansion\nD. Temporal\n\nAnswer:
@@ -24,7 +24,7 @@ def main():
     sample_args = ReasoningArgs(
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
-        version='gpt3_5.pdtb3.pred_l1.subtext2',  # TODO
+        version='gpt3_5.pdtb3.pred_l1.subtext3',  # TODO
         data_name='pdtb3',
         label_level='level1',
         relation='Implicit',

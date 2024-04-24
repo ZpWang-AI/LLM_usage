@@ -22,9 +22,10 @@ sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
 gpt-3.5-turbo
 sk-aKOThu0aARoVOtLOAdC4722a930e4875A2De29Cb1948301f
 '''
-# gpt-3.5-turbo
-# sk-gU4D0bOrRgAmASyF4fFeCd76D1Fb486cA77a75190d8c42Ad
-# sk-jk7440gbyWkGBBys67369542Df3f40589c834350A8Fd9687
+usage_bill_dic = {
+    'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 2e-6,},
+    'claude-3-opus-20240229': {'prompt_tokens': 15e-6, 'completion_tokens': 75e-6,},
+}
 
 api_key = [i.strip()for i in api_key.split() if i.strip()]
 api_key_dic = dict(zip(api_key[::2], api_key[1::2]))
@@ -68,6 +69,11 @@ def chat_api(
     max_retry=30,
     show_output=False,
 ) -> Union[str, List[str]]:
+    """
+    if content is str, return str
+    if content is List[str], return List[str]
+    the same as messages input
+    """
     # return 'test output'
     client = OpenAI(
         base_url='https://api.pumpkinaigc.online/v1',
@@ -121,7 +127,10 @@ def chat_api(
     messages.add_bot(response_content)
     
     with open(USEAGE_RECORD_PATH, 'a', encoding='utf8')as f:
-        json.dump(dict(usage), f)
+        usage = dict(usage)
+        usage['timestamp'] = time.time()
+        usage['model'] = model
+        json.dump(usage, f)
         f.write('\n')
     with open(QA_RECORD_PATH, 'a', encoding='utf8')as f:
         json.dump(messages.messages, f)
@@ -140,6 +149,22 @@ def get_content(target_line=-1, print_content=True):
         print(Messages(messages))
     return messages
 
+
+def calculate_usage(start_timestamp=-1, end_timestamp=float('inf')):
+    total_usage = 0
+    with open(USEAGE_RECORD_PATH, 'r', encoding='utf8')as f:
+        for line in f.readlines():
+            line = line.strip()
+            if not line:
+                continue
+            usage = json.loads(line)
+            if not start_timestamp <= usage['timestamp'] <= end_timestamp:
+                continue
+            model = usage['model']
+            for target, cost in usage_bill_dic[model].items():
+                total_usage += usage[target]*cost
+    return total_usage 
+
                 
 if __name__ == '__main__':
     res = chat_api(
@@ -151,3 +176,6 @@ if __name__ == '__main__':
     print(res)
     
     # get_content(-1, print_content=True)
+    
+    # print(calculate_usage())
+    pass
