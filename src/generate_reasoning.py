@@ -10,7 +10,7 @@ from chat_api import chat_api
 # from dataframe import DataFrame
 from IDRR_data import DataFrames, PromptFiller
 # from reason_args import ReasonArgs
-from utils import AttrDict
+from utils import AttrDict, dump_json
 
 
 class ReasoningArgs(AttrDict):
@@ -68,7 +68,7 @@ class ReasoningGenerator:
 
         self.root_path = path(__file__).parent.parent/'data'/'reasoning'/self.args.version
         self.args._dump_json(self.root_path/'self.args.json', overwrite=False)
-        self.result_path = self.root_path/'result.json'
+        self.result_path = self.root_path/'result.jsonl'
     
     def get_chat_response_json(self):
         if path(self.result_path).exists():
@@ -97,9 +97,11 @@ class ReasoningGenerator:
             if self.args.n_reasoning_per_sample == 1:
                 response_list = response_list[0]
             
-            with open(self.result_path, 'a', encoding='utf8')as f:
-                json.dump({'id': pid, 'reasoning': response_list}, f)
-                f.write('\n')
+            dump_json(
+                target={'id': pid, 'reasoning': response_list}, 
+                file_path=self.result_path,
+                mode='a',
+            )
         progress_bar.close()
         print('All Chatting Tasks are Done')
         

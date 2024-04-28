@@ -2,6 +2,7 @@ import datetime
 import json
 import openai
 import time
+import traceback
 
 from typing import *
 from pathlib import Path as path
@@ -9,10 +10,8 @@ from openai import OpenAI
 
 
 RECORD_ROOT_PATH = path(__file__).parent.parent/'api_record'
-USEAGE_RECORD_PATH = RECORD_ROOT_PATH/'usage.jsonl'
-QA_RECORD_PATH = RECORD_ROOT_PATH/'qa.jsonl'
-path(USEAGE_RECORD_PATH).parent.mkdir(parents=True, exist_ok=True)
-path(QA_RECORD_PATH).parent.mkdir(parents=True, exist_ok=True)
+RECORD_PATH = RECORD_ROOT_PATH/'record.jsonl'
+path(RECORD_PATH).parent.mkdir(parents=True, exist_ok=True)
 
 
 api_key = '''
@@ -36,8 +35,11 @@ class Messages:
         if messages is not None:
             if hasattr(messages, 'messages'):
                 self.messages = messages.messages
-            else:
+            elif isinstance(messages, list) and all(isinstance(p, dict)for p in messages):
                 self.messages = messages
+            else:
+                print(messages)
+                raise Exception('wrong type of messages')
         else:
             self.messages = []
 
@@ -74,22 +76,13 @@ def chat_api(
     if content is List[str], return List[str]
     the same as messages input
     """
-    # return 'test output'
-    client = OpenAI(
-        base_url='https://api.pumpkinaigc.online/v1',
-        api_key=api_key_dic[model],
-    )
-    
-    if messages is not None:
-        messages = Messages(messages)
-    else:
-        messages = Messages()
+    # prepare messages
+    if messages is None:
         if content is None:
             raise Exception('empty input of chat_api')
         else:
-            if isinstance(content, str):
-                messages.add_user(content)
-            elif hasattr(content, '__iter__'):
+            messages = Messages()
+            if hasattr(content, '__iter__'):
                 for pstr in content:
                     messages.add_user(pstr)
                     chat_api(
@@ -101,9 +94,21 @@ def chat_api(
                     print(messages)
                 return [p['content']for p in messages.messages 
                         if p['role'] == 'assistant']
+
+            elif isinstance(content, str):
+                messages.add_user(content)
+
             else:
                 raise Exception('wrong type of chat_api')
+
+    else:
+        messages = Messages(messages)
     
+    # chat
+    client = OpenAI(
+        base_url='https://api.pumpkinaigc.online/v1',
+        api_key=api_key_dic[model],
+    )
     messages: Messages
     for _ in range(max_retry):
         try:
@@ -112,29 +117,34 @@ def chat_api(
                 messages=messages.messages,
                 # max_tokens=3,
             )
+            response_content = response.choices[0].message.content
+            usage = response.usage
+            messages.add_bot(response_content)
             break
         except openai.APIConnectionError:
             time.sleep(10)
+        except AttributeError:
+            print(traceback.format_exc())
+            print('='*20)
+            print(messages.messages)
+            print('='*20)
+            print(response)
+            exit()
         except:
-            import traceback
             print(traceback.format_exc())
             print('='*20)
             print(messages.messages)
             exit()
-            
-    response_content = response.choices[0].message.content
-    usage = response.usage
-    messages.add_bot(response_content)
     
-    with open(USEAGE_RECORD_PATH, 'a', encoding='utf8')as f:
-        usage = dict(usage)
-        usage['timestamp'] = time.time()
-        usage['model'] = model
-        json.dump(usage, f)
-        f.write('\n')
-    with open(QA_RECORD_PATH, 'a', encoding='utf8')as f:
-        json.dump(messages.messages, f)
-        # json.dump({'query': content, 'ans': response_content}, f)
+    # record
+    with open(RECORD_PATH, 'a', encoding='utf8')as f:
+        record = {
+            'timestamp': time.time(),
+            'model': model,
+            'usage': dict(usage),
+            'messages': messages.messages
+        }
+        json.dump(record, f)
         f.write('\n')
     if show_output:
         print(messages)
@@ -142,9 +152,9 @@ def chat_api(
 
 
 def get_content(target_line=-1, print_content=True):
-    with open(QA_RECORD_PATH, 'r', encoding='utf8')as f:
+    with open(RECORD_PATH, 'r', encoding='utf8')as f:
         line = f.readlines()[target_line]
-        messages = json.loads(line)
+        messages = json.loads(line)['messages']
     if print_content:
         print(Messages(messages))
     return messages
@@ -152,17 +162,17 @@ def get_content(target_line=-1, print_content=True):
 
 def calculate_usage(start_timestamp=-1, end_timestamp=float('inf')):
     total_usage = 0
-    with open(USEAGE_RECORD_PATH, 'r', encoding='utf8')as f:
+    with open(RECORD_PATH, 'r', encoding='utf8')as f:
         for line in f.readlines():
             line = line.strip()
             if not line:
                 continue
-            usage = json.loads(line)
-            if not start_timestamp <= usage['timestamp'] <= end_timestamp:
+            record = json.loads(line)
+            if not start_timestamp <= record['timestamp'] <= end_timestamp:
                 continue
-            model = usage['model']
+            model = record['model']
             for target, cost in usage_bill_dic[model].items():
-                total_usage += usage[target]*cost
+                total_usage += record['usage'][target]*cost
     return total_usage 
 
                 
