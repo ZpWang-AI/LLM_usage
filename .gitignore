@@ -23,6 +23,7 @@ nohup.out
 !/README.md
 !/requirements.txt
 !/src
+# /src/script
 
 # src
 src/scripts

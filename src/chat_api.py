@@ -19,7 +19,7 @@ claude-3-opus-20240229
 sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
 
 gpt-3.5-turbo
-sk-aKOThu0aARoVOtLOAdC4722a930e4875A2De29Cb1948301f
+sk-4IcGKRNMgNyQuYbyBa71Ec23024241B8B5Cd49Ab2cAeF8Ae
 '''
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 2e-6,},

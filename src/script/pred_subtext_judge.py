@@ -14,17 +14,17 @@ from process_pred import ReasoningPredProcessor
 def main():
     prompt = [
         '''
-        Argument 1:\n{arg1}\n\nArgument 2:\n{arg2}\n\nWhat\'s the implicit meaning between the arguments?
+        Argument 1:\n{arg1}\n\nArgument 2:\n{arg2}\n\nJudge whether there is an implicit meaning between the arguments? If this implicit meaning exists, what is it?
         '''.strip(),
         '''
-        Based on the implicit meaning mentioned above, what is the discourse relation between Argument 1 and Argument 2?\nA. Comparison\nB. Contingency\nC. Expansion\nD. Temporal\n\nAnswer:
+        Based on the implicit meaning mentioned above (if it exists), what is the discourse relation between Argument 1 and Argument 2?\nA. Comparison\nB. Contingency\nC. Expansion\nD. Temporal\n\nAnswer:
         '''.strip(),
     ]
     
     sample_args = ReasoningArgs(
+        version='gpt3_5.pdtb3.pred_l1.subtext_judge1',  # !!! TODO !!!
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
-        version='gpt3_5.pdtb3.pred_l1.subtext3_1',  # TODO
         data_name='pdtb3',
         label_level='level1',
         relation='Implicit',
