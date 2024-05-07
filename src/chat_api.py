@@ -122,14 +122,19 @@ def chat_api(
             messages.add_bot(response_content)
             break
         except openai.APIConnectionError:
-            time.sleep(10)
+            print(traceback.format_exc())
+            print('waiting '+'*'*20)
+            time.sleep(10)            
         except AttributeError:
             print(traceback.format_exc())
-            print('='*20)
-            print(messages.messages)
-            print('='*20)
-            print(response)
-            exit()
+            print('waiting '+'*'*20)
+            time.sleep(10)
+            # print(traceback.format_exc())
+            # print('='*20)
+            # print(messages.messages)
+            # print('='*20)
+            # print(response)
+            # exit()
         except:
             print(traceback.format_exc())
             print('='*20)

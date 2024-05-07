@@ -17,12 +17,12 @@ def main():
         Argument 1:\n{arg1}\n\nArgument 2:\n{arg2}\n\nJudge whether there is an implicit meaning between the arguments? If this implicit meaning exists, what is it?
         '''.strip(),
         '''
-        Based on the implicit meaning mentioned above (if it exists), what is the discourse relation between Argument 1 and Argument 2?\nA. Comparison\nB. Contingency\nC. Expansion\nD. Temporal\n\nAnswer:
+        What is the discourse relation between Argument 1 and Argument 2?\nA. Comparison\nB. Contingency\nC. Expansion\nD. Temporal\n\nAnswer:
         '''.strip(),
     ]
     
     sample_args = ReasoningArgs(
-        version='gpt3_5.pdtb3.pred_l1.subtext_judge1',  # !!! TODO !!!
+        version='gpt3_5.pdtb3.pred_l1.subtext_judge2',  # !!! TODO !!!
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
         data_name='pdtb3',

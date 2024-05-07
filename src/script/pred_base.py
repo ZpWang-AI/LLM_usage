@@ -22,9 +22,9 @@ def main():
     ]
     
     sample_args = ReasoningArgs(
+        version='gpt3_5.pdtb3.pred_l1.base2',  # !!! TODO !!!
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
-        version='gpt3_5.pdtb3.pred_l1.base2',  # TODO
         data_name='pdtb3',
         label_level='level1',
         relation='Implicit',
@@ -35,7 +35,7 @@ def main():
     )
     sample_main = ReasoningPredProcessor(sample_args)
     sample_main.get_chat_response_json()
-    sample_main.get_result_df()
+    sample_main.process_pred()
     
 if __name__ == '__main__':
     main()
