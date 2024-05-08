@@ -1,9 +1,10 @@
 torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_subtext_chinese.py"
+torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_base_IICOT.py"
 torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_base.py"
 torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_subtext.py"
 torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_subtext_judge.py"
-torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_base_IICOT.py"
 torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/pred_base_fewshot.py"
+torun_file="/public/home/hongy/zpwang/LLM_Reasoning/src/script/train_subtext.py"
 
 start_time=$(date +%Y-%m-%d-%H-%M-%S)
 filename=$(basename "$torun_file")

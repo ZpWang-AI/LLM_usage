@@ -22,13 +22,13 @@ def main():
     ]
     
     sample_args = ReasoningArgs(
-        version='gpt3_5.pdtb3.pred_l1.subtext_judge2',  # !!! TODO !!!
+        version='gpt3_5.pdtb2.pred_l1.subtext_judge2',  # !!! TODO !!!
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
-        data_name='pdtb3',
+        data_name='pdtb2',
         label_level='level1',
         relation='Implicit',
-        data_path=ROOT_PATH/'data'/'used'/'pdtb3.p1.csv',
+        data_path=ROOT_PATH/'data'/'used'/'pdtb2.p1.csv',
         split='test',
         n_reasoning_per_sample=1,
         max_sample=-1,

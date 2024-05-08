@@ -39,39 +39,36 @@ Example 1:
 \t  
 \tAnswer:
 \tA. Comparison
-
-Example 2:
-\tArgument 1:
-\tthat prevents the production of pollen
-\t
-\tArgument 2:
-\tthe gene can prevent a plant from fertilizing itself
-\t
-\tAnswer:
-\tB. Contingency
-    
-Example 3:
-\tArgument 1: 
-\tthere's a satisfaction in going against the rules
-\t
-\tArgument 2: 
-\the means the rule that a player can't cut it after a certain age
-\t
-\tAnswer: 
-\tC. Expansion
-    
-Example 4:
-\tArgument 1:
-\the was heralded by a trumpet fanfare
-\t
-\tArgument 2:
-\tthe judge marched down the center aisle in his flowing black robe
-\t
-\tAnswer:
-\tD. Temporal
-    
-
     '''.strip()
+# Example 2:
+# \tArgument 1:
+# \tthat prevents the production of pollen
+# \t
+# \tArgument 2:
+# \tthe gene can prevent a plant from fertilizing itself
+# \t
+# \tAnswer:
+# \tB. Contingency
+    
+# Example 3:
+# \tArgument 1: 
+# \tthere's a satisfaction in going against the rules
+# \t
+# \tArgument 2: 
+# \the means the rule that a player can't cut it after a certain age
+# \t
+# \tAnswer: 
+# \tC. Expansion
+    
+# Example 4:
+# \tArgument 1:
+# \the was heralded by a trumpet fanfare
+# \t
+# \tArgument 2:
+# \tthe judge marched down the center aisle in his flowing black robe
+# \t
+# \tAnswer:
+# \tD. Temporal
     
     prompt = [f'{prompt_task}']
     
@@ -79,7 +76,7 @@ Example 4:
     sample_args = ReasoningArgs(
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
-        version='gpt3_5.pdtb3.pred_l1.base_fewshot2',  # TODO
+        version='gpt3_5.pdtb3.pred_l1.base_fewshot1_1',  # TODO
         data_name='pdtb3',
         label_level='level1',
         relation='Implicit',
@@ -94,3 +91,4 @@ Example 4:
     
 if __name__ == '__main__':
     main()
+    
