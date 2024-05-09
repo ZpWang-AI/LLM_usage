@@ -110,7 +110,7 @@ def chat_api(
         api_key=api_key_dic[model],
     )
     messages: Messages
-    for _ in range(max_retry):
+    for retry_time in range(1, max_retry+1):
         try:
             response = client.chat.completions.create(
                 model=model,
@@ -123,11 +123,11 @@ def chat_api(
             break
         except openai.APIConnectionError:
             print(traceback.format_exc())
-            print('waiting '+'*'*20)
+            print(f'retry {retry_time} '+'*'*20)
             time.sleep(10)            
         except AttributeError:
             print(traceback.format_exc())
-            print('waiting '+'*'*20)
+            print(f'retry {retry_time} '+'*'*20)
             time.sleep(10)
             # print(traceback.format_exc())
             # print('='*20)
