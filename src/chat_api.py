@@ -82,7 +82,10 @@ def chat_api(
             raise Exception('empty input of chat_api')
         else:
             messages = Messages()
-            if hasattr(content, '__iter__'):
+            if isinstance(content, str):
+                messages.add_user(content)
+
+            elif hasattr(content, '__iter__'):
                 for pstr in content:
                     messages.add_user(pstr)
                     chat_api(
@@ -94,9 +97,6 @@ def chat_api(
                     print(messages)
                 return [p['content']for p in messages.messages 
                         if p['role'] == 'assistant']
-
-            elif isinstance(content, str):
-                messages.add_user(content)
 
             else:
                 raise Exception('wrong type of chat_api')
