@@ -10,6 +10,9 @@ from utils import dump_json
 
 
 def get_label_id_from_pred(label_list:List[str], pred:str, invalid_pred:int=-1):
+    """
+    get the label appeared first
+    """
     res = invalid_pred
     res_pid = 10**20
 

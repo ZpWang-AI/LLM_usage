@@ -165,9 +165,9 @@ def get_content(target_line=-1, print_content=True):
     return messages
 
 
-def calculate_usage(start_timestamp=-1, end_timestamp=float('inf')):
+def calculate_usage(record_path=RECORD_PATH, start_timestamp=-1, end_timestamp=float('inf')):
     total_usage = 0
-    with open(RECORD_PATH, 'r', encoding='utf8')as f:
+    with open(record_path, 'r', encoding='utf8')as f:
         for line in f.readlines():
             line = line.strip()
             if not line:
@@ -182,15 +182,15 @@ def calculate_usage(start_timestamp=-1, end_timestamp=float('inf')):
 
                 
 if __name__ == '__main__':
-    res = chat_api(
-        # content='hello, what\' your name?',
-        content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
-        model='gpt-3.5-turbo',
-        show_output=True
-    )
-    print(res)
+    # res = chat_api(
+    #     # content='hello, what\' your name?',
+    #     content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
+    #     model='gpt-3.5-turbo',
+    #     show_output=True
+    # )
+    # print(res)
     
     # get_content(-1, print_content=True)
     
-    # print(calculate_usage())
+    print(calculate_usage())
     pass
