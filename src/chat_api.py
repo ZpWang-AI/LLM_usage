@@ -129,12 +129,10 @@ def chat_api(
             print(traceback.format_exc())
             print(f'retry {retry_time} '+'*'*20)
             time.sleep(10)
-            # print(traceback.format_exc())
-            # print('='*20)
-            # print(messages.messages)
-            # print('='*20)
-            # print(response)
-            # exit()
+        except openai.InternalServerError:
+            print(traceback.format_exc())
+            print(f'retry {retry_time} '+'*'*20)
+            time.sleep(10)
         except:
             print(traceback.format_exc())
             print('='*20)
