@@ -1,69 +1,47 @@
-import os
-import json
+from utils_zp.common_import import *
+
 import pandas as pd
 
-from typing import *
 from tqdm import tqdm
-from pathlib import Path as path
 
 from chat_api import chat_api
-# from dataframe import DataFrame
-from IDRR_data import DataFrames, PromptFiller
-# from reason_args import ReasonArgs
-from utils import AttrDict, dump_json
+from IDRR_data import DataFrames, PromptFiller, IDRRDataFrames
+from utils_zp import AttrDict, dump_json, ExpArgs
 
 
-class ReasoningArgs(AttrDict):
+class ReasoningArgs(ExpArgs):
     def __init__(
         self,
         prompt,
         llm_name:str,    
-        version:str,
+        desc:str,
         
-        data_name:Literal['pdtb2', 'pdtb3', 'conll'],
-        label_level:Literal['level1', 'level2', 'raw'],
-        relation:Literal['Implicit', 'Explicit', 'All'],
-        data_path:str,
-        split:Literal['train', 'dev', 'test', 'blind_test'],
+        dfs:IDRRDataFrames,
+        split:Literal['train', 'dev', 'test', 'all'],
         
         n_reasoning_per_sample=1,
         max_sample=-1,
-        create_time=None,
     ) -> None:
         self.prompt = prompt
         self.llm_name = llm_name
-        self.version = version
+        self.desc = desc
         
-        self.data_name = data_name
-        self.label_level = label_level
-        self.relation = relation
-        self.data_path = data_path
+        self.dfs = dfs
         self.split = split
         
         self.n_reasoning_per_sample = n_reasoning_per_sample
         if max_sample < 0:
             max_sample = 10**20
         self.max_sample = max_sample
-        self.set_create_time(create_time=create_time)
+        self.set_create_time()
+        
+        self._version_info_list = []
             
     # def dump_json(self, arg_space, overwrite=False):
     #     json_path = path(arg_space)/f'{self.create_time}.{self.llm_name}.{self.version}.json'
     #     self._dump_json(json_path, overwrite=overwrite)
     
-
-class ReasoningGenerator:
-    def __init__(
-        self, 
-        reasoning_args:ReasoningArgs
-    ) -> None:
-        self.args = reasoning_args
-        
-        self.dfs = DataFrames(
-            data_name=self.args.data_name,
-            label_level=self.args.label_level,
-            relation=self.args.relation,
-            data_path=self.args.data_path,
-        )
+    def start(self):
         self.df = self.dfs.get_dataframe(split=self.args.split)
 
         self.root_path = path(__file__).parent.parent/'data'/'reasoning'/self.args.version

@@ -20,6 +20,9 @@ sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
 
 gpt-3.5-turbo
 sk-JbC2bzNMdNpVRkbeDfF132D032674d36A5Da86F919631cFc
+
+gpt-4-turbo
+sk-p6uGzySiKJXwAhHpBa95F8Fc95844b09Bf99480161D58816
 '''
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 2e-6,},
@@ -111,6 +114,17 @@ def chat_api(
     )
     messages: Messages
     for retry_time in range(1, max_retry+1):
+        def retry_func():
+            print(traceback.format_exc())
+            print(f'{"*"*5} retry {retry_time} {"*"*5}')
+            time.sleep(10)  
+        
+        def error_func():
+            print(traceback.format_exc())
+            print('='*20)
+            print(messages.messages)
+            exit()
+            
         try:
             response = client.chat.completions.create(
                 model=model,
@@ -122,22 +136,16 @@ def chat_api(
             messages.add_bot(response_content)
             break
         except openai.APIConnectionError:
-            print(traceback.format_exc())
-            print(f'retry {retry_time} '+'*'*20)
-            time.sleep(10)            
+            retry_func()    
         except AttributeError:
-            print(traceback.format_exc())
-            print(f'retry {retry_time} '+'*'*20)
-            time.sleep(10)
+            retry_func()
         except openai.InternalServerError:
-            print(traceback.format_exc())
-            print(f'retry {retry_time} '+'*'*20)
-            time.sleep(10)
+            if '无可用渠道' in traceback.format_exc():
+                error_func()
+            else:
+                retry_func()
         except:
-            print(traceback.format_exc())
-            print('='*20)
-            print(messages.messages)
-            exit()
+            error_func()
     
     # record
     with open(RECORD_PATH, 'a', encoding='utf8')as f:
@@ -180,15 +188,15 @@ def calculate_usage(record_path=RECORD_PATH, start_timestamp=-1, end_timestamp=f
 
                 
 if __name__ == '__main__':
-    # res = chat_api(
-    #     # content='hello, what\' your name?',
-    #     content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
-    #     model='gpt-3.5-turbo',
-    #     show_output=True
-    # )
-    # print(res)
+    res = chat_api(
+        # content='hello, what\' your name?',
+        content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
+        model='gpt-4-turbo',
+        show_output=True
+    )
+    print(res)
     
     # get_content(-1, print_content=True)
     
-    print(calculate_usage())
+    # print(calculate_usage())
     pass
