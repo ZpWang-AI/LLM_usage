@@ -9,7 +9,7 @@ from IDRR_data import DataFrames, PromptFiller, IDRRDataFrames
 from utils_zp import AttrDict, dump_json, ExpArgs
 
 
-class ReasoningArgs(ExpArgs):
+class ReasoningGenerator(ExpArgs):
     def __init__(
         self,
         prompt,
@@ -26,7 +26,8 @@ class ReasoningArgs(ExpArgs):
         self.llm_name = llm_name
         self.desc = desc
         
-        self.dfs = dfs
+        self._dfs = dfs
+        self.IDRR_dataframes = dfs.json
         self.split = split
         
         self.n_reasoning_per_sample = n_reasoning_per_sample
@@ -131,7 +132,7 @@ Complete the task called Implicit Discourse Relation Recognition (IDRR). Given t
         '''.strip(),
     ]
     
-    sample_args = ReasoningArgs(
+    sample_args = ReasoningGenerator(
         prompt=prompt,
         llm_name='gpt-3.5-turbo',
         version='gpt3_5.pdtb3.pred_l1.subtext',
