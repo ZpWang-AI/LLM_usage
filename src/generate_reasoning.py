@@ -2,11 +2,9 @@ from utils_zp.common_import import *
 
 import pandas as pd
 
-from tqdm import tqdm
-
 from chat_api import chat_api
-from IDRR_data import DataFrames, PromptFiller, IDRRDataFrames
-from utils_zp import AttrDict, dump_json, ExpArgs
+from IDRR_data import PromptFiller, IDRRDataFrames
+from utils_zp import ExpArgs, dump_json, load_json
 
 
 class ReasoningGenerator(ExpArgs):
@@ -15,16 +13,20 @@ class ReasoningGenerator(ExpArgs):
         prompt,
         llm_name:str,    
         desc:str,
+        output_space,
         
         dfs:IDRRDataFrames,
         split:Literal['train', 'dev', 'test', 'all'],
         
         n_reasoning_per_sample=1,
         max_sample=-1,
+        
+        *args, **kwargs
     ) -> None:
         self.prompt = prompt
         self.llm_name = llm_name
         self.desc = desc
+        self._output_space = output_space
         
         self._dfs = dfs
         self.IDRR_dataframes = dfs.json
@@ -36,49 +38,65 @@ class ReasoningGenerator(ExpArgs):
         self.max_sample = max_sample
         self.set_create_time()
         
-        self._version_info_list = []
-            
-    # def dump_json(self, arg_space, overwrite=False):
-    #     json_path = path(arg_space)/f'{self.create_time}.{self.llm_name}.{self.version}.json'
-    #     self._dump_json(json_path, overwrite=overwrite)
+        self._version_info_list = [
+            self.llm_name,
+            f'{dfs}_{split}',
+            self.desc, 
+        ]
+        
+    @classmethod
+    def load_json(cls, json_path, overwrite_existing=True):
+        # res = super().load_json(json_path)
+        args = load_json(json_path)
+        dfs = IDRRDataFrames(
+            **args['IDRR_dataframes']
+        )
+        args['dfs'] = dfs
+        args['output_space'] = path(json_path).parent
+        return cls(**args)
+        # res = cls(**load_json(json_path))
+        # res._dfs = 
+        # return res
     
     def start(self):
-        self.df = self.dfs.get_dataframe(split=self.args.split)
-
-        self.root_path = path(__file__).parent.parent/'data'/'reasoning'/self.args.version
-        self.args._dump_json(self.root_path/'self.args.json', overwrite=False)
-        self.result_path = self.root_path/'result.jsonl'
-    
-    def get_chat_response_json(self):
-        if path(self.result_path).exists():
-            with open(self.result_path, 'r', encoding='utf8')as f:
-                start_id = len(f.readlines())
-        else:
-            start_id = 0
-        end_id = min(self.df.shape[0], start_id+self.args.max_sample)
+        df = self._dfs.get_dataframe(split=self.split)
         
-        progress_bar = tqdm(total=(end_id-start_id)*self.args.n_reasoning_per_sample)
-        for pid in range(start_id, end_id):
+        output_path = path(self._output_space)/self.version
+        if output_path.exists():
+            if input('output_path exist, continue? y/n\n') != 'y':
+                exit()
+        else:
+            make_path(dir_path=output_path)
+        dump_json(self.json, output_path/'args.json', mode='w', indent=4)
+        result_path = output_path/'result.jsonl'
+    
+        dealt_data_id_set = set()
+        if result_path.exists():
+            for line in load_json(result_path):
+                dealt_data_id_set.add(line['data_id'])
+        
+        progress_bar = tqdm.tqdm(total=min(self.max_sample, len(df)-len(dealt_data_id_set))*self.n_reasoning_per_sample)
+        for index, row in df.iterrows():
+            if row['data_id'] in dealt_data_id_set:
+                continue
             
-            row = self.df.iloc[pid]
-            query = PromptFiller.fill_prompt(row, self.args.prompt)
+            query = PromptFiller.fill_prompt(row, self.prompt)
             response_list = []
             try:
-                for _ in range(self.args.n_reasoning_per_sample):
-                    response = chat_api(content=query, model=self.args.llm_name)
+                for _ in range(self.n_reasoning_per_sample):
+                    response = chat_api(content=query, model=self.llm_name)
                     response_list.append(response)
                     progress_bar.update(1)
             except:
-                import traceback
                 print(traceback.format_exc())
                 exit()
                 
-            if self.args.n_reasoning_per_sample == 1:
+            if self.n_reasoning_per_sample == 1:
                 response_list = response_list[0]
             
             dump_json(
-                target={'id': pid, 'reasoning': response_list}, 
-                file_path=self.result_path,
+                target={'data_id': row['data_id'], 'reasoning': response_list}, 
+                file_path=result_path,
                 mode='a',
             )
         progress_bar.close()
@@ -87,9 +105,9 @@ class ReasoningGenerator(ExpArgs):
     def get_result_df(self):
         raise Exception('TODO')
         result_dic = self.df.to_dict(orient='list')
-        if self.args.n_reasoning_per_sample > 1:
+        if self.n_reasoning_per_sample > 1:
             result_dic = {
-                k: [p for p in v for _ in range(self.args.n_reasoning_per_sample)]
+                k: [p for p in v for _ in range(self.n_reasoning_per_sample)]
                 for k, v in result_dic.items()
             }  # [v1, v2, v3] -> [v1, v1, v2, v2, v3, v3]
 
@@ -132,20 +150,21 @@ Complete the task called Implicit Discourse Relation Recognition (IDRR). Given t
         '''.strip(),
     ]
     
-    sample_args = ReasoningGenerator(
+    dfs = IDRRDataFrames(
+        data_name='pdtb3', data_level='top', data_relation='Implicit',
+        data_path='/home/qwe/test/zpwang/IDRR_data/data/used/pdtb3_top_implicit.subtext2.csv'
+    )
+    sample_generator = ReasoningGenerator(
         prompt=prompt,
-        llm_name='gpt-3.5-turbo',
-        version='gpt3_5.pdtb3.pred_l1.subtext',
-        data_name='pdtb3',
-        label_level='raw',
-        relation='Implicit',
-        data_path='/public/home/hongy/zpwang/LLM_Reasoning/data/used/pdtb3.p1.csv',
+        llm_name='gpt-4-turbo',
+        desc=f'subtext',
+        output_space='/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning',
+        dfs=dfs,
         split='test',
         n_reasoning_per_sample=1,
-        max_sample=-1,
+        max_sample=1,
     )
-    sample_generator = ReasoningGenerator(sample_args)
-    sample_generator.get_chat_response_json()
+    sample_generator.start()
     
     
             
