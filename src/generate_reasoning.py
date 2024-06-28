@@ -65,6 +65,7 @@ class ReasoningGenerator(ExpArgs):
         if output_path.exists():
             if input('output_path exist, continue? y/n\n') != 'y':
                 exit()
+            pass
         else:
             make_path(dir_path=output_path)
         dump_json(self.json, output_path/'args.json', mode='w', indent=4)

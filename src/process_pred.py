@@ -4,25 +4,6 @@ from sklearn.metrics import f1_score, classification_report, confusion_matrix
 
 from generate_reasoning import ReasoningGenerator
 from utils_zp import dump_json, load_json, postprocess_generation_res_to_lid
-
-
-# def get_label_id_from_pred(label_list:List[str], pred:str, invalid_pred:int=-1):
-#     """
-#     get the label appeared first
-#     """
-#     res = invalid_pred
-#     res_pid = 10**20
-
-#     pred = pred.lower()
-#     for lid, label in enumerate(label_list):
-#         label = label.lower()
-#         if label in pred:
-#             pid = pred.index(label)
-#             if pid < res_pid:
-#                 res = lid
-#                 res_pid = pid
-    
-#     return res
     
 
 class ReasoningPredProcessor(ReasoningGenerator):
@@ -33,7 +14,11 @@ class ReasoningPredProcessor(ReasoningGenerator):
         reasoning_results = load_json(self._output_space/'result.jsonl')
         reasoning_dataid_dic = {}
         for line in reasoning_results:
-            reasoning_dataid_dic[line['data_id']] = line['reasoning'][-1]
+            cur_dataid = line['data_id']
+            cur_reasoning = line['reasoning']
+            if not isinstance(cur_reasoning, str):
+                cur_reasoning = cur_reasoning[-1]
+            reasoning_dataid_dic[cur_dataid] = cur_reasoning
         
         reasoning = []
         gt = []
@@ -49,7 +34,9 @@ class ReasoningPredProcessor(ReasoningGenerator):
         # exit()
         
         res_to_lid = postprocess_generation_res_to_lid(
-            pred=reasoning, gt=gt, match_strategy='last exists',
+            pred=reasoning, gt=gt, 
+            match_strategy='last exists', 
+            # lower_results=True
         )
         reasoning = res_to_lid['pred']
         gt = res_to_lid['gt']
@@ -85,7 +72,7 @@ class ReasoningPredProcessor(ReasoningGenerator):
 
 if __name__ == '__main__':
     sample_processor = ReasoningPredProcessor.load_json(
-        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-4-turbo.pdtb3_top_Implicit_test.subtext/args.json'
+        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-4-turbo.pdtb3_top_Implicit_test.base/args.json'
     )
     sample_processor.process_pred()
     # sample_args = ReasoningArgs.load_json(
