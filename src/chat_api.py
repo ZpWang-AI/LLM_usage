@@ -27,6 +27,7 @@ sk-1U3iugCNmC2hpcJB84F5BdFfE2424f29B032Bd751b01070a
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 2e-6,},
     'claude-3-opus-20240229': {'prompt_tokens': 15e-6, 'completion_tokens': 75e-6,},
+    'gpt-4-turbo': {'prompt_tokens': 10e-6, 'completion_tokens': 30e-6,},
 }
 
 api_key = [i.strip()for i in api_key.split() if i.strip()]

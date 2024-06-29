@@ -10,8 +10,8 @@ class ReasoningPredProcessor(ReasoningGenerator):
     def process_pred(self):
         # label_list = self._dfs.label_list
         # num_labels = len(label_list)
-
-        reasoning_results = load_json(self._output_space/'result.jsonl')
+        output_dir = self._output_space/self.version
+        reasoning_results = load_json(output_dir/'result.jsonl')
         reasoning_dataid_dic = {}
         for line in reasoning_results:
             cur_dataid = line['data_id']
@@ -62,7 +62,7 @@ class ReasoningPredProcessor(ReasoningGenerator):
             'confusion_matrix': confusion_mat.tolist(),
             'cls_report': cls_report,
         }
-        dump_json(res, self._output_space/'cls_report.json', indent=4)
+        dump_json(res, output_dir/'cls_report.json', indent=4)
         # f1 = f1_score(gt_vec, pred_vec, average='macro', zero_division=0)
         # f1 *= 100
         # f1_res_path = self.root_path/'f1_score.json'
@@ -72,7 +72,7 @@ class ReasoningPredProcessor(ReasoningGenerator):
 
 if __name__ == '__main__':
     sample_processor = ReasoningPredProcessor.load_json(
-        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-4-turbo.pdtb3_top_Implicit_test.base/args.json'
+        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-4-turbo.pdtb3_top_Implicit_train.subtext copy/args.json'
     )
     sample_processor.process_pred()
     # sample_args = ReasoningArgs.load_json(

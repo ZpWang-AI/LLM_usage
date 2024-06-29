@@ -44,6 +44,8 @@ class ReasoningGenerator(ExpArgs):
             self.desc, 
         ]
         
+        self.merge_dict(kwargs)
+        
     @classmethod
     def load_json(cls, json_path, overwrite_existing=True):
         # res = super().load_json(json_path)
@@ -52,8 +54,9 @@ class ReasoningGenerator(ExpArgs):
             **args['IDRR_dataframes']
         )
         args['dfs'] = dfs
-        args['output_space'] = path(json_path).parent
-        return cls(**args)
+        args['output_space'] = path(json_path).parent.parent
+        sample = cls(**args)
+        return sample
         # res = cls(**load_json(json_path))
         # res._dfs = 
         # return res
@@ -61,25 +64,31 @@ class ReasoningGenerator(ExpArgs):
     def start(self):
         df = self._dfs.get_dataframe(split=self.split)
         
-        output_path = path(self._output_space)/self.version
-        if output_path.exists():
-            if input('output_path exist, continue? y/n\n') != 'y':
-                exit()
-            pass
+        output_dir = path(self._output_space)/self.version
+        if not output_dir.exists():
+            make_path(dir_path=output_dir)
+        args_path = output_dir/'args.json'
+        if not args_path.exists():
+            dump_json(self.json, args_path, mode='w', indent=4)
         else:
-            make_path(dir_path=output_path)
-        dump_json(self.json, output_path/'args.json', mode='w', indent=4)
-        result_path = output_path/'result.jsonl'
+            args_info = load_json(args_path)
+            assert self.create_time == args_info['create_time']
+        result_path = output_dir/'result.jsonl'
     
         dealt_data_id_set = set()
         if result_path.exists():
             for line in load_json(result_path):
                 dealt_data_id_set.add(line['data_id'])
         
-        progress_bar = tqdm.tqdm(total=min(self.max_sample, len(df)-len(dealt_data_id_set))*self.n_reasoning_per_sample)
+        progress_bar = tqdm.tqdm(total=min(self.max_sample, len(df))*self.n_reasoning_per_sample)  # done_reasoning / total_reasoning
         for index, row in df.iterrows():
             if row['data_id'] in dealt_data_id_set:
+                progress_bar.update(self.n_reasoning_per_sample)
+                progress_bar.display()
                 continue
+            if len(dealt_data_id_set) >= self.max_sample:
+                break
+            dealt_data_id_set.add(row['data_id'])
             
             query = PromptFiller.fill_prompt(row, self.prompt)
             response_list = []

@@ -5,13 +5,14 @@ from chat_api import Messages
 class ReasoningGeneratorContinue(ReasoningGenerator):
     def continue_generate(self, new_prompt):
         df = self._dfs.get_dataframe(split=self.split)
+        output_dir = self._output_space/self.version
         
-        args = load_json(self._output_space/'args.json')
+        args = load_json(output_dir/'args.json')
         args['new_prompt'] = new_prompt
-        dump_json(args, self._output_space/'args.new.json', mode='w', indent=4)
+        dump_json(args, output_dir/'args.new.json', mode='w', indent=4)
         
-        result_path = self._output_space/'result.jsonl'
-        new_result_path = self._output_space/'result.new.jsonl'
+        result_path = output_dir/'result.jsonl'
+        new_result_path = output_dir/'result.new.jsonl'
     
         done_results = load_json(result_path)
         if new_result_path.exists():
