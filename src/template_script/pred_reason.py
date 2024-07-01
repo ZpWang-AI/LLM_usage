@@ -13,23 +13,24 @@ from generate_reasoning import ReasoningGenerator
 def main():
     prompt = [
         '''
-    Argument 1:
-    {arg1}
+Argument 1:
+{arg1}
 
-    Argument 2:
-    {arg2}
+Argument 2:
+{arg2}
 
-    What's the implicit meaning between the arguments?
+What's the implicit meaning between the arguments?
         '''.strip(),
         '''
-    What is the discourse relation between Argument 1 and Argument 2?
-    A. Comparison
-    B. Contingency
-    C. Expansion
-    D. Temporal
+What is the discourse relation between Argument 1 and Argument 2?
+A. Comparison
+B. Contingency
+C. Expansion
+D. Temporal
 
-    Answer:
+Answer:
         '''.strip(),
+        '''Just output the answer directly.'''
     ]
     
     dfs = IDRRDataFrames(
