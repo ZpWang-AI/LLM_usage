@@ -22,7 +22,7 @@ gpt-3.5-turbo
 sk-JbC2bzNMdNpVRkbeDfF132D032674d36A5Da86F919631cFc
 
 gpt-4-turbo
-sk-1U3iugCNmC2hpcJB84F5BdFfE2424f29B032Bd751b01070a
+sk-tCz6yOqZfQsniCak0a234dA3212f42678179A0B2723b065d
 '''
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 2e-6,},
