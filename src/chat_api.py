@@ -25,7 +25,7 @@ gpt-4-turbo
 sk-tCz6yOqZfQsniCak0a234dA3212f42678179A0B2723b065d
 '''
 usage_bill_dic = {
-    'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 2e-6,},
+    'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 4.5e-6,},
     'claude-3-opus-20240229': {'prompt_tokens': 15e-6, 'completion_tokens': 75e-6,},
     'gpt-4-turbo': {'prompt_tokens': 10e-6, 'completion_tokens': 30e-6,},
 }
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     res = chat_api(
         # content='hello, what\' your name?',
         content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
-        model='gpt-4-turbo',
+        model='gpt-3.5-turbo',
         show_output=True
     )
     print(res)
