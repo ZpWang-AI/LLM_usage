@@ -1,13 +1,12 @@
-from utils_zp.common_import import *
+from utils_zp import *
+from generate_reasoning import ReasoningGenerator
 
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
 
-from generate_reasoning import ReasoningGenerator
-from utils_zp import dump_json, load_json, postprocess_generation_res_to_lid
     
 
 class ReasoningPredProcessor(ReasoningGenerator):
-    def process_pred(self):
+    def process_pred(self, split=None):
         # label_list = self._dfs.label_list
         # num_labels = len(label_list)
         output_dir = self._output_space/self.version
@@ -23,7 +22,9 @@ class ReasoningPredProcessor(ReasoningGenerator):
         reasoning = []
         gt = []
         not_exist = 0
-        for index, row in self._dfs.get_dataframe(split=self.split).iterrows():
+        if split is None:
+            split = self.split
+        for index, row in self._dfs.get_dataframe(split=split).iterrows():
             cur_dataid = row['data_id']
             if cur_dataid in reasoning_dataid_dic:
                 reasoning.append(reasoning_dataid_dic[cur_dataid])
@@ -35,7 +36,7 @@ class ReasoningPredProcessor(ReasoningGenerator):
         
         res_to_lid = postprocess_generation_res_to_lid(
             pred=reasoning, gt=gt, 
-            match_strategy='last exists', 
+            match_strategy='first exists', 
             # lower_results=True
         )
         reasoning = res_to_lid['pred']
@@ -55,14 +56,14 @@ class ReasoningPredProcessor(ReasoningGenerator):
             y_true=gt, y_pred=reasoning, labels=list(range(len(label_list))),
             target_names=label_list, output_dict=False
         ))
-        # print(cls_report)
-        # return
         res = {
             'macro-f1': cls_report['macro avg']['f1-score'],
             'confusion_matrix': confusion_mat.tolist(),
             'cls_report': cls_report,
         }
+        print(res)
         dump_json(res, output_dir/'cls_report.json', indent=4)
+        
         # f1 = f1_score(gt_vec, pred_vec, average='macro', zero_division=0)
         # f1 *= 100
         # f1_res_path = self.root_path/'f1_score.json'
@@ -72,9 +73,9 @@ class ReasoningPredProcessor(ReasoningGenerator):
 
 if __name__ == '__main__':
     sample_processor = ReasoningPredProcessor.load_json(
-        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-4-turbo.pdtb3_top_Implicit_train.subtext copy/args.json'
+        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-3.5-turbo.pdtb2_top_Implicit_all.subtext/args.json'
     )
-    sample_processor.process_pred()
+    sample_processor.process_pred(split='test')
     # sample_args = ReasoningArgs.load_json(
     #     '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.base2/self.args.json'
     #     # '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.init/self.args.json'
