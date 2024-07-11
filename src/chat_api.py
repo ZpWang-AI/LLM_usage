@@ -19,7 +19,7 @@ claude-3-opus-20240229
 sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
 
 gpt-3.5-turbo
-sk-JbC2bzNMdNpVRkbeDfF132D032674d36A5Da86F919631cFc
+sk-EGeae8VzLUF0FxSr3d8fE8605d874fA4Ab4e9e4976D68641
 
 gpt-4-turbo
 sk-tCz6yOqZfQsniCak0a234dA3212f42678179A0B2723b065d
@@ -71,7 +71,7 @@ class Messages:
 def chat_api(
     content:Union[str, Iterable[str]]=None,
     messages:Union[Messages, List[dict]]=None,
-    model=Literal['claude-3-opus-20240229', 'gpt-3.5-turbo'],
+    model=Literal['claude-3-opus-20240229', 'gpt-3.5-turbo', 'gpt-4-turbo'],
     max_retry=30,
     show_output=False,
 ) -> Union[str, List[str]]:
@@ -136,10 +136,15 @@ def chat_api(
             usage = response.usage
             messages.add_bot(response_content)
             break
-        except openai.APIConnectionError:
-            retry_func()    
         except AttributeError:
             retry_func()
+        except openai.APIConnectionError:
+            retry_func()
+        except openai.AuthenticationError:
+            if '额度已用尽' in traceback.format_exc():
+                error_func()
+            else:
+                retry_func()    
         except openai.InternalServerError:
             if '无可用渠道' in traceback.format_exc():
                 error_func()
