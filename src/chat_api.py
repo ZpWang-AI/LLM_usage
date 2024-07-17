@@ -22,7 +22,7 @@ gpt-3.5-turbo
 sk-EGeae8VzLUF0FxSr3d8fE8605d874fA4Ab4e9e4976D68641
 
 gpt-4-turbo
-sk-tCz6yOqZfQsniCak0a234dA3212f42678179A0B2723b065d
+sk-eOjCVZZY5lQkiJJz21Ed2587Bb474bEcB9C055Fe595e7816
 '''
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 4.5e-6,},
@@ -35,7 +35,7 @@ api_key_dic = dict(zip(api_key[::2], api_key[1::2]))
 
 
 class Messages: 
-    def __init__(self, messages:Union[List[dict], None]=None) -> None:
+    def __init__(self, messages:Union[List[dict], 'Messages', None]=None) -> None:
         if messages is not None:
             if hasattr(messages, 'messages'):
                 self.messages = messages.messages
@@ -151,7 +151,7 @@ def chat_api(
             else:
                 retry_func()
         except:
-            error_func()
+            retry_func()
     
     # record
     with open(RECORD_PATH, 'a', encoding='utf8')as f:
