@@ -22,8 +22,9 @@ gpt-3.5-turbo
 sk-EGeae8VzLUF0FxSr3d8fE8605d874fA4Ab4e9e4976D68641
 
 gpt-4-turbo
-sk-eOjCVZZY5lQkiJJz21Ed2587Bb474bEcB9C055Fe595e7816
+sk-5NSnGHokwmSSqS70778e2bF155E249Ac92D0DcA8DcB51754
 '''
+# sk-vlnPP3ywKrwypDR863Ac9aF2Ab964fA18fC8D08dF5D81552 gpt4
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 4.5e-6,},
     'claude-3-opus-20240229': {'prompt_tokens': 15e-6, 'completion_tokens': 75e-6,},
