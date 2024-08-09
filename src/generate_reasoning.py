@@ -162,13 +162,13 @@ Complete the task called Implicit Discourse Relation Recognition (IDRR). Given t
     
     dfs = IDRRDataFrames(
         data_name='pdtb3', data_level='top', data_relation='Implicit',
-        data_path='/home/qwe/test/zpwang/IDRR_data/data/used/pdtb3_top_implicit.subtext2.csv'
+        data_path='/home/user/test/zpwang/IDRR_data/data/used/pdtb3_top_implicit.subtext2.csv'
     )
     sample_generator = ReasoningGenerator(
         prompt=prompt,
         llm_name='gpt-4-turbo',
         desc=f'subtext',
-        output_space='/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning',
+        output_space='/home/user/test/zpwang/LLM_Reasoning/data/reasoning',
         dfs=dfs,
         split='test',
         n_reasoning_per_sample=1,

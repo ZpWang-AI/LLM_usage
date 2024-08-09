@@ -73,7 +73,7 @@ class ReasoningPredProcessor(ReasoningGenerator):
 
 if __name__ == '__main__':
     sample_processor = ReasoningPredProcessor.load_json(
-        '/home/qwe/test/zpwang/LLM_Reasoning/data/reasoning/gpt-3.5-turbo.pdtb2_top_Implicit_all.subtext/args.json'
+        '/home/user/test/zpwang/LLM_Reasoning/data/reasoning/gpt-3.5-turbo.pdtb2_top_Implicit_all.subtext/args.json'
     )
     sample_processor.process_pred(split='test')
     # sample_args = ReasoningArgs.load_json(
