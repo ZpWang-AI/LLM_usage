@@ -19,10 +19,10 @@ claude-3-opus-20240229
 sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
 
 gpt-3.5-turbo
-sk-EGeae8VzLUF0FxSr3d8fE8605d874fA4Ab4e9e4976D68641
+sk-nOjUfMVeQiAWCO9nA5E4EaBfFeB54b9a8d2985FaEe30F8Fe
 
 gpt-4-turbo
-sk-5NSnGHokwmSSqS70778e2bF155E249Ac92D0DcA8DcB51754
+sk-cCFxhEZgnjm42hfoCb9632Ff8d6b48CfA2743a0e9cAe0d33
 '''
 # sk-vlnPP3ywKrwypDR863Ac9aF2Ab964fA18fC8D08dF5D81552 gpt4
 usage_bill_dic = {
@@ -151,6 +151,8 @@ def chat_api(
                 error_func()
             else:
                 retry_func()
+        except KeyboardInterrupt:
+            error_func()
         except:
             retry_func()
     
@@ -198,7 +200,8 @@ if __name__ == '__main__':
     res = chat_api(
         # content='hello, what\' your name?',
         content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
-        model='gpt-3.5-turbo',
+        # model='gpt-3.5-turbo',
+        model='gpt-4-turbo',
         show_output=True
     )
     print(res)
