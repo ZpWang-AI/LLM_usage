@@ -47,6 +47,12 @@ Answer:
         n_reasoning_per_sample=1,
         max_sample=-1,
     )
+    
+    # sample_generator = ReasoningGenerator.load_json(
+    #     json_path='/home/user/test/zpwang/LLM_Reasoning/data/reasoning/gpt-3.5-turbo.pdtb3_top_Implicit_test.subtext/args.json',
+    # )
+    # sample_generator.max_sample = 10**9
+    
     sample_generator.start()
     
     
