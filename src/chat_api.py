@@ -8,13 +8,14 @@ from typing import *
 from pathlib import Path as path
 from openai import OpenAI
 
-
+# === API usage record path ===
 RECORD_ROOT_PATH = path(__file__).parent.parent/'api_record'
 RECORD_PATH = RECORD_ROOT_PATH/'record.jsonl'
 path(RECORD_PATH).parent.mkdir(parents=True, exist_ok=True)
 
-
-api_key = '''
+# === API KEY ===
+# from api_key_file import API_KEY
+API_KEY = '''
 claude-3-opus-20240229
 sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
 
@@ -31,8 +32,8 @@ usage_bill_dic = {
     'gpt-4-turbo': {'prompt_tokens': 10e-6, 'completion_tokens': 30e-6,},
 }
 
-api_key = [i.strip()for i in api_key.split() if i.strip()]
-api_key_dic = dict(zip(api_key[::2], api_key[1::2]))
+API_KEY = [i.strip()for i in API_KEY.split() if i.strip()]
+api_key_dic = dict(zip(API_KEY[::2], API_KEY[1::2]))
 
 
 class Messages: 
@@ -155,6 +156,8 @@ def chat_api(
             error_func()
         except:
             retry_func()
+    else:
+        error_func()
     
     # record
     with open(RECORD_PATH, 'a', encoding='utf8')as f:
@@ -169,6 +172,33 @@ def chat_api(
     if show_output:
         print(messages)
     return response_content
+
+
+API_PLACEHOLDER = '<API>'
+
+def chat_api_template(
+    template:List[str]=None,
+    model=Literal['claude-3-opus-20240229', 'gpt-3.5-turbo', 'gpt-4-turbo'],
+    max_retry=30,
+    show_output=False,
+) -> List[str]:
+    """
+    template:
+        [user, bot, user, bot, ...]
+    return:
+        [user, bot, user, bot, ...]
+    """
+    msg = Messages()
+    for p in range(0,len(template),2):
+        user, bot = template[p:p+2]
+        msg.add_user(user)
+        if bot == API_PLACEHOLDER:
+            chat_api(messages=msg, model=model, max_retry=max_retry, show_output=False)
+        else:
+            msg.add_bot(bot)
+    if show_output:
+        print(msg)
+    return [p['content']for p in msg.messages]
 
 
 def get_content(target_line=-1, print_content=True):
@@ -197,12 +227,19 @@ def calculate_usage(record_path=RECORD_PATH, start_timestamp=-1, end_timestamp=f
 
                 
 if __name__ == '__main__':
-    res = chat_api(
-        # content='hello, what\' your name?',
-        content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
-        # model='gpt-3.5-turbo',
-        model='gpt-4-turbo',
-        show_output=True
+    # res = chat_api(
+    #     # content='hello, what\' your name?',
+    #     content=['hello, what\'s the weather today', 'maybe i should not ask you this question'],
+    #     model='gpt-3.5-turbo',
+    #     # model='gpt-4-turbo',
+    #     show_output=True
+    # )
+    # print(res)
+    
+    res = chat_api_template(
+        template=['hello', API_PLACEHOLDER, 'who is the president of usa', API_PLACEHOLDER],
+        model='gpt-3.5-turbo',
+        show_output=True,
     )
     print(res)
     
