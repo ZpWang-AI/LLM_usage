@@ -14,18 +14,19 @@ RECORD_PATH = RECORD_ROOT_PATH/'record.jsonl'
 path(RECORD_PATH).parent.mkdir(parents=True, exist_ok=True)
 
 # === API KEY ===
-# from api_key_file import API_KEY
+from api_key_file import API_KEY
+
 API_KEY = '''
 claude-3-opus-20240229
-sk-y6d5sFcYw0qvi6cC7678F58a26B04b58A9D3D881380e7148
+sk-xxx
 
 gpt-3.5-turbo
-sk-nOjUfMVeQiAWCO9nA5E4EaBfFeB54b9a8d2985FaEe30F8Fe
+sk-xxx
 
 gpt-4-turbo
-sk-cCFxhEZgnjm42hfoCb9632Ff8d6b48CfA2743a0e9cAe0d33
+sk-xxx
 '''
-# sk-vlnPP3ywKrwypDR863Ac9aF2Ab964fA18fC8D08dF5D81552 gpt4
+
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 4.5e-6,},
     'claude-3-opus-20240229': {'prompt_tokens': 15e-6, 'completion_tokens': 75e-6,},

@@ -27,7 +27,7 @@ nohup.out
 
 # src
 src/scripts
+src/api_key_file.py
 !src/model/_test_model.py
 !src/data/_test_data.py
-
 # data

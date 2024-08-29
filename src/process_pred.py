@@ -16,7 +16,7 @@ class ReasoningPredProcessor(ReasoningGenerator):
             cur_dataid = line['data_id']
             cur_reasoning = line['reasoning']
             if not isinstance(cur_reasoning, str):
-                cur_reasoning = cur_reasoning[-1]
+                cur_reasoning = cur_reasoning[-1]+cur_reasoning[-2]
             reasoning_dataid_dic[cur_dataid] = cur_reasoning
         
         reasoning = []
@@ -56,8 +56,10 @@ class ReasoningPredProcessor(ReasoningGenerator):
             y_true=gt, y_pred=reasoning, labels=list(range(len(label_list))),
             target_names=label_list, output_dict=False
         ))
+        acc = (confusion_mat*np.eye(len(confusion_mat))).sum() / confusion_mat.sum()
         res = {
             'macro-f1': cls_report['macro avg']['f1-score'],
+            'acc': acc,
             'confusion_matrix': confusion_mat.tolist(),
             'cls_report': cls_report,
         }
@@ -73,14 +75,10 @@ class ReasoningPredProcessor(ReasoningGenerator):
 
 if __name__ == '__main__':
     sample_processor = ReasoningPredProcessor.load_json(
-        '/home/user/test/zpwang/LLM_Reasoning/data/reasoning/gpt-3.5-turbo.pdtb2_top_Implicit_all.subtext/args.json'
+        '/home/user/test/zpwang/LLaMA/exp_space/paper_needed/prompt_llm/gpt-3.5-turbo.pdtb3_top_Implicit_test.base/args.json'
     )
     sample_processor.process_pred(split='test')
-    # sample_args = ReasoningArgs.load_json(
-    #     '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.base2/self.args.json'
-    #     # '/public/home/hongy/zpwang/LLM_Reasoning/data/reasoning/gpt3_5.pdtb3.pred_l1.init/self.args.json'
-    # )
-    # sample_processor = ReasoningPredProcessor(sample_args)
-    # print(sample_processor.process_pred())
+    
+    
         
         
