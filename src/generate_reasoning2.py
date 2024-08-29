@@ -45,7 +45,7 @@ class ReasoningGenerator(ExpArgs):
         self.merge_dict(kwargs)
         
     @classmethod
-    def load_json(cls, json_path, overwrite_existing=True):
+    def load_json(cls, json_path):
         args = load_json(json_path)
         dfs = IDRRDataFrames(
             **args['IDRR_dataframes']

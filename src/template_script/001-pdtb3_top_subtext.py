@@ -30,16 +30,17 @@ D. Temporal
 
 Answer:
         '''.strip(),
-        '''Just output the answer directly.'''
+        '''Please just output the answer directly.'''
     ]
     
     dfs = IDRRDataFrames(
         data_name='pdtb3', data_level='top', data_relation='Implicit',
-        data_path='/home/user/test/zpwang/IDRR_data/data/used/pdtb3_top_implicit.subtext2.csv'
+        data_path='/home/user/test/zpwang/IDRR_data/data/used/pdtb3_top_implicit.csv'
     )
+    # >>> start new reasoning
     sample_generator = ReasoningGenerator(
         prompt=prompt,
-        llm_name='gpt-4-turbo',
+        llm_name='gpt-3.5-turbo',
         desc=f'subtext',
         output_space='/home/user/test/zpwang/LLM_Reasoning/data/reasoning',
         dfs=dfs,
@@ -48,6 +49,7 @@ Answer:
         max_sample=-1,
     )
     
+    # >>> continue old reasoning
     # sample_generator = ReasoningGenerator.load_json(
     #     json_path='/home/user/test/zpwang/LLM_Reasoning/data/reasoning/gpt-3.5-turbo.pdtb3_top_Implicit_test.subtext/args.json',
     # )
