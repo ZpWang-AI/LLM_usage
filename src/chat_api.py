@@ -16,16 +16,16 @@ path(RECORD_PATH).parent.mkdir(parents=True, exist_ok=True)
 # === API KEY ===
 from api_key_file import API_KEY
 
-API_KEY = '''
-claude-3-opus-20240229
-sk-xxx
+# API_KEY = '''
+# claude-3-opus-20240229
+# sk-xxx
 
-gpt-3.5-turbo
-sk-xxx
+# gpt-3.5-turbo
+# sk-xxx
 
-gpt-4-turbo
-sk-xxx
-'''
+# gpt-4-turbo
+# sk-xxx
+# '''
 
 usage_bill_dic = {
     'gpt-3.5-turbo': {'prompt_tokens': 1.5e-6, 'completion_tokens': 4.5e-6,},

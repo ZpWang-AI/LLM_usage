@@ -4,7 +4,7 @@
 # `sh run.sh 001`
 script_dir="/home/user/test/zpwang/LLM_Reasoning/src/scripts"
 log_dir="/home/user/test/zpwang/LLM_Reasoning/logs"
-python_exe="/home/user/miniconda3/envs/zpwang_llama/bin/python"
+python_exe="/home/user/anaconda3/envs/zp_llama/bin/python"
 
 torun_file=$(find $script_dir -type f -name "${1}*")
 num_files=$(echo $torun_file | wc -l)
