@@ -1,4 +1,4 @@
-# LLM_Reasoning
+# LLM_API
 
 Call the API, and make use of the reasoning capability of LLM
 
