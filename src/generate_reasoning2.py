@@ -1,8 +1,8 @@
-from utils_zp.common_import import *
+from utils_zp import *
 
 import pandas as pd
 
-from chat_api import chat_api, chat_api_template, API_PLACEHOLDER
+from src.llm_api import llm_api, chat_api_template, QUERY_PLACEHOLDER
 from IDRR_data import PromptFiller, IDRRDataFrames
 from utils_zp import ExpArgs, dump_json, load_json
 
@@ -110,11 +110,11 @@ if __name__ == '__main__':
         '''
         The first argument:\n\n{arg1}\n\nThe second argument:\n\n{arg2}\n\nWhat\'s the subtext between the arguments?
         '''.strip(),
-        API_PLACEHOLDER,
+        QUERY_PLACEHOLDER,
         '''
         What\' the relation between arguments? Answer should be one of (Comparison, Contingency, Expansion, Temporal)
         '''.strip(),
-        API_PLACEHOLDER,
+        QUERY_PLACEHOLDER,
     ]
     
     dfs = IDRRDataFrames(

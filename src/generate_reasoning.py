@@ -1,8 +1,8 @@
-from utils_zp.common_import import *
+from utils_zp import *
 
 import pandas as pd
 
-from chat_api import chat_api
+from src.llm_api import llm_api
 from IDRR_data import PromptFiller, IDRRDataFrames
 from utils_zp import ExpArgs, dump_json, load_json
 
@@ -93,7 +93,7 @@ class ReasoningGenerator(ExpArgs):
             response_list = []
             try:
                 for _ in range(self.n_reasoning_per_sample):
-                    response = chat_api(content=query, model=self.llm_name)
+                    response = llm_api(content=query, model=self.llm_name)
                     response_list.append(response)
                     progress_bar.update(1)
             except:

@@ -1,4 +1,4 @@
-from utils_zp.common_import import *
+from utils_zp import *
 
 add_sys_path(__file__, 2)
 
@@ -6,7 +6,7 @@ SRC_PATH = path(__file__).parent.parent
 ROOT_PATH = SRC_PATH.parent
 
 from IDRR_data import IDRRDataFrames
-from generate_reasoning2 import ReasoningGenerator, API_PLACEHOLDER
+from generate_reasoning2 import ReasoningGenerator, QUERY_PLACEHOLDER
 # from process_pred import ReasoningPredProcessor
 
 
@@ -21,7 +21,7 @@ Argument 2:
 
 What's the implicit meaning between the arguments?
         '''.strip(),
-        API_PLACEHOLDER,
+        QUERY_PLACEHOLDER,
         '''
 What is the discourse relation between Argument 1 and Argument 2?
 A. Comparison
@@ -31,9 +31,9 @@ D. Temporal
 
 Answer:
         '''.strip(),
-        API_PLACEHOLDER,
+        QUERY_PLACEHOLDER,
         '''Please just output the answer directly.''',
-        API_PLACEHOLDER,
+        QUERY_PLACEHOLDER,
     ]
     
     dfs = IDRRDataFrames(
