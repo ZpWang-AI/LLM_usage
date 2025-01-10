@@ -3,6 +3,7 @@
 *.zip
 *.ipynb
 *.log
+*.egg-info
 _*
 !__init__.py
 *tmp*
@@ -20,6 +21,7 @@ nohup.out
 
 /*
 !/.gitignore
+!/pyproject.toml
 !/README.md
 !/requirements.txt
 !/src

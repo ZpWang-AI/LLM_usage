@@ -185,6 +185,7 @@ class llm_api:
                 else:
                     cur_messages.add_user(messages[p])
             return False
+        raise TypeError(f'wrong type of messages, {type(messages)}')
     
     @classmethod
     def __main(cls, func, messages:Messages, max_retry):
@@ -271,7 +272,7 @@ if __name__ == '__main__':
     # # sample_messages.add_bot('sorry')
     # sample_messages.add_user('why would you be so rude?')
     llm_api(
-        messages=['hello', 'fuck out', 'how rude you are!', QUERY_PLACEHOLDER, QUERY_PLACEHOLDER],
+        messages=['hello', '...', '??', QUERY_PLACEHOLDER, QUERY_PLACEHOLDER],
         model='gpt-3.5-turbo', print_messages=True,
     )
     # res = ChatAPI(Messages('hello'), model='gpt-3.5-turbo')
