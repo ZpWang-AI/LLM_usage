@@ -1,36 +1,51 @@
-# *.sh
-*.cmd
-*.zip
-*.ipynb
-*.log
-*.egg-info
-_*
-!__init__.py
-*tmp*
-*test*
-*old*
-
 __pycache__
-logs
 .vscode
-# .gitignore
 .git
+.DS_Store
 nohup.out
+
+*backup*/
+*trash*/
+*log*/
+*tmp*/
+old/
+local/
+# *archive
+
+# *.sh
+# *.cmd
+# *.ipynb
+*.zip
+*.7z
+*.log
+# *test*
+~*
+*~
+*~.*
+*.old*
+*.local*
+*.egg-info
 
 # ==============================
 
 /*
 !/.gitignore
+!/dependence.drawio.png
 !/pyproject.toml
 !/README.md
+!/requirements_all.txt
 !/requirements.txt
-!/src
+!/setup.py
+!/TODO.md
+!/VERSION
 !/todo*
 # /src/script
 
 !/src_old
+!/tutorial
 
 # src
+!/src
 src/scripts
 src/api_key_file.py
 !src/model/_test_model.py

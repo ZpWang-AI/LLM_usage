@@ -1,3 +1,2 @@
 * multi threading
 
-* github
