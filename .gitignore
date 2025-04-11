@@ -28,6 +28,8 @@ nohup.out
 !/todo*
 # /src/script
 
+!/src_old
+
 # src
 src/scripts
 src/api_key_file.py
