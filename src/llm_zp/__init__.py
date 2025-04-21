@@ -1,0 +1,1 @@
+from .qwen_omni import QwenOmni

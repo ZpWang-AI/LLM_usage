@@ -1,1 +1,4 @@
+utils_zp
+
 openai==1.40.2
+transformers
