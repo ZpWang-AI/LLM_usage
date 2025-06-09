@@ -8,9 +8,6 @@ pip install qwen-omni-utils[decord] -U
 """
 qwen_omni_utils = LazyImport('qwen_omni_utils')
 
-if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2,3,4'
-
 
 class QwenOmni:
     use_audio_in_video = False
@@ -105,6 +102,8 @@ class QwenOmni:
 
 
 if __name__ == '__main__':
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2,3,4,5,6,7'
+
     conversation = [
         {
             "role": "system",
@@ -116,7 +115,7 @@ if __name__ == '__main__':
             "role": "user",
             "content": [
                 # {"type": "video", "video": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/draw.mp4"},
-                {'type': 'text', 'text': 'what is Large Language Model'}
+                {'type': 'text', 'text': 'what is Large Language Model, explain from different aspects. return in json format'}
             ],
         },
     ]
