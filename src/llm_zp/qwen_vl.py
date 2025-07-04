@@ -16,10 +16,10 @@ class QwenVL:
         mode:Literal['auto']='auto', 
         input_device:Literal['auto', 'cuda:0', 'cuda:1']='auto',
     ):
-        from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+        from transformers import AutoProcessor
 
         if mode == 'auto':
-            model_arg_map = {
+            self.model_arg_map = {
                 'torch_dtype': 'auto',
                 'device_map': 'auto',
             }
@@ -48,18 +48,26 @@ class QwenVL:
         else:
             raise Exception(f'wrong mode: {mode}')
 
-        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            model_or_model_path, 
-            **model_arg_map
-        )
         self.processor = AutoProcessor.from_pretrained(
             model_or_model_path,
             use_fast=True,
         )
         self.input_device = input_device
+        self.model_or_model_path = model_or_model_path
+        self.model = None
+    
+    def load_model(self):
+        from transformers import Qwen2_5_VLForConditionalGeneration
+        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            self.model_or_model_path, 
+            **self.model_arg_map
+        )
 
     def __call__(self, conversation, only_output_assistant:bool=True):
         from qwen_vl_utils import process_vision_info
+        
+        if not self.model:
+            self.load_model()
 
         model, processor, input_device = self.model, self.processor, self.input_device
 
