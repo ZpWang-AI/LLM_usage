@@ -16,10 +16,8 @@ class QwenVL:
         mode:Literal['auto']='auto', 
         input_device:Literal['auto', 'cuda:0', 'cuda:1']='auto',
     ):
-        from transformers import AutoProcessor
-
         if mode == 'auto':
-            self.model_arg_map = {
+            model_arg_map = {
                 'torch_dtype': 'auto',
                 'device_map': 'auto',
             }
@@ -48,25 +46,29 @@ class QwenVL:
         else:
             raise Exception(f'wrong mode: {mode}')
 
-        self.processor = AutoProcessor.from_pretrained(
-            model_or_model_path,
-            use_fast=True,
-        )
-        self.input_device = input_device
-        self.model_or_model_path = model_or_model_path
+        self.processor = None
         self.model = None
+        self.model_or_model_path = model_or_model_path
+        self.model_arg_map = model_arg_map
+        self.input_device = input_device
     
     def load_model(self):
-        from transformers import Qwen2_5_VLForConditionalGeneration
-        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            self.model_or_model_path, 
-            **self.model_arg_map
-        )
+        from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+        if self.model is None:
+            self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                self.model_or_model_path, 
+                **self.model_arg_map
+            )
+        if self.processor is None:
+            self.processor = AutoProcessor.from_pretrained(
+                self.model_or_model_path,
+                use_fast=True,
+            )
 
-    def __call__(self, conversation, only_output_assistant:bool=True):
+    def __call__(self, conversation, only_output_assistant:bool=True, fps:float=15):
         from qwen_vl_utils import process_vision_info
         
-        if not self.model:
+        if not self.model or not self.processor:
             self.load_model()
 
         model, processor, input_device = self.model, self.processor, self.input_device
@@ -77,14 +79,23 @@ class QwenVL:
             add_generation_prompt=True, 
             tokenize=False
         )
+        # return
         image_inputs, video_inputs = process_vision_info(conversation)
+        # print(image_inputs)
+        # print(video_inputs)
+        # print(gap_line())
+        # print([p.shape for p in video_inputs])
+        # return
         inputs = processor(
             text=[text],
             images=image_inputs,
             videos=video_inputs,
             padding=True,
             return_tensors="pt",
+            fps=fps,
         )
+        # print(inputs)
+        # return
         if input_device == 'auto':
             inputs = inputs.to(model.device).to(model.dtype)
         else:
@@ -104,7 +115,7 @@ class QwenVL:
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2,3,4,5,6,7'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '6,7'
 
     conversation = [
         {
@@ -118,9 +129,10 @@ if __name__ == '__main__':
             "content": [
                 {
                     "type": "video", 
-                    "video": "file:///home/zhipang/PhysicalDynamics/data/Annotation/pipeline.wisa_v3_2.example/yes/3/1d9c24ec6d0d48b33ef4765edc267a483993eada518649a29620c5861f9bfe13.mp4",
-                    "max_pixels": 512 * 512,
-                    "fps": 5.0,
+                    # "video": "file:///home/zhipang/PhysicalDynamics/data/Annotation/pipeline.wisa_v3_2.example/yes/3/1d9c24ec6d0d48b33ef4765edc267a483993eada518649a29620c5861f9bfe13.mp4",
+                    "video": "file:///home/zhipang/PhysicalDynamics/src/ManualAnnotationSystem/test2.mp4",
+                    "max_pixels": 128 * 128,
+                    "fps": 15.0,
                 },
                 {'type': 'text', 'text': '''## Objective
 Identify the dominant subjects in the video.

@@ -6,7 +6,6 @@ https://huggingface.co/Qwen/Qwen2.5-Omni-7B
 pip install accelerate
 pip install qwen-omni-utils[decord] -U
 """
-qwen_omni_utils = LazyImport('qwen_omni_utils')
 
 
 class QwenOmni:
@@ -19,7 +18,7 @@ class QwenOmni:
         mode:Literal['auto', 'bf16', '4bit', '8bit']='bf16', 
         input_device:Literal['auto', 'cuda:0', 'cuda:1']='auto'
     ):
-        from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
+
 
         if mode == 'auto':
             model_arg_map = {
@@ -51,14 +50,30 @@ class QwenOmni:
         else:
             raise Exception(f'wrong mode: {mode}')
 
-        self.model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-            model_or_model_path, 
-            **model_arg_map
-        )
-        self.processor = Qwen2_5OmniProcessor.from_pretrained(model_or_model_path)
+        self.model = None
+        self.processor = None
+        self.model_or_model_path = model_or_model_path
+        self.model_arg_map = model_arg_map
         self.input_device = input_device
 
+    def load_model(self):
+        from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
+        if self.model is None:
+            self.model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
+                self.model_or_model_path, 
+                **self.model_arg_map
+            )
+        if self.processor is None:
+            self.processor = Qwen2_5OmniProcessor.from_pretrained(
+                self.model_or_model_path
+            )
+
     def __call__(self, conversation, only_output_assistant:bool=True):
+        from qwen_omni_utils import process_mm_info
+
+        if not self.model or not self.processor:
+            self.load_model()
+
         model, processor, input_device = self.model, self.processor, self.input_device
         USE_AUDIO_IN_VIDEO = self.use_audio_in_video
 
@@ -68,7 +83,7 @@ class QwenOmni:
             add_generation_prompt=True, 
             tokenize=False
         )
-        audios, images, videos = qwen_omni_utils.process_mm_info(
+        audios, images, videos = process_mm_info(
             conversation, 
             use_audio_in_video=USE_AUDIO_IN_VIDEO
         )
@@ -80,7 +95,8 @@ class QwenOmni:
             inputs = inputs.to(model.device).to(model.dtype)
         else:
             inputs = inputs.to(input_device).to(model.dtype)
-
+        # print(inputs.device)
+        # print(model.device)
         if self.return_audio:
             raise Exception("self.return_audio should not be True. TODO")
             text_ids, audio = model.generate(**inputs, use_audio_in_video=USE_AUDIO_IN_VIDEO)
@@ -102,7 +118,7 @@ class QwenOmni:
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2,3,4,5,6,7'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '4,5,6,7'
 
     conversation = [
         {
@@ -121,5 +137,6 @@ if __name__ == '__main__':
     ]
     print()
     print(
-        QwenOmni(input_device='cuda:1')(conversation)[0]
+        # QwenOmni(input_device='cuda:1')(conversation)[0]
+        QwenOmni(input_device='cuda:0')(conversation)[0]
     )
